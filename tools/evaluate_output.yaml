@@ -1,0 +1,90 @@
+identity:
+  name: evaluate_output
+  author: neuraltrust
+  label:
+    en_US: Evaluate Output
+    zh_Hans: 评估输出
+description:
+  human:
+    en_US: Evaluate a model response against your TrustGuard policy's Output rules before it reaches the user.
+  llm: Check a model response for sensitive data, toxicity and policy violations before it is shown to the user. Returns status allow, report, transform, ask, block or skip.
+parameters:
+  - name: text
+    type: string
+    required: true
+    label:
+      en_US: Text
+    human_description:
+      en_US: Model response to evaluate, e.g. the LLM node's text output.
+    llm_description: The exact text to evaluate.
+    form: llm
+  - name: session_id
+    type: string
+    required: false
+    label:
+      en_US: Session ID
+    human_description:
+      en_US: Stable conversation key (e.g. {{sys.conversation_id}}) so TrustGuard can group turns and run session-aware detectors. Synthesized by TrustGuard if empty.
+    form: form
+  - name: consumer_id
+    type: string
+    required: false
+    label:
+      en_US: Consumer ID
+    human_description:
+      en_US: End-user identifier (e.g. {{sys.user_id}}) used for per-consumer policy routing. Empty means the collector's default policy.
+    form: form
+  - name: model_name
+    type: string
+    required: false
+    label:
+      en_US: Model Name
+    human_description:
+      en_US: Optional model name, sent as attributes.model.name for gates and rules.
+    form: form
+  - name: fail_open
+    type: boolean
+    required: false
+    default: false
+    label:
+      en_US: Fail Open on Unreachable
+    human_description:
+      en_US: If enabled, connection errors, timeouts and HTTP 429/502/503/504 (after retries) return status "allow" with evaluated=false instead of failing the node. Authentication errors and other HTTP errors always fail.
+    form: form
+  - name: timeout_seconds
+    type: number
+    required: false
+    default: 10
+    min: 1
+    max: 60
+    label:
+      en_US: Timeout (seconds)
+    human_description:
+      en_US: HTTP timeout per attempt (up to 3 attempts).
+    form: form
+output_schema:
+  type: object
+  properties:
+    status:
+      type: string
+      description: "TrustGuard verdict: allow, report, transform, ask, block or skip"
+    blocked:
+      type: boolean
+      description: "True when status is block or ask (or an unknown status). Branch on this in an IF/ELSE node."
+    safe_text:
+      type: string
+      description: "Text to forward: the masked text on transform, an empty string when blocked, otherwise the original text"
+    evaluated:
+      type: boolean
+      description: "False only when TrustGuard was unreachable and fail-open was used"
+    trace_id:
+      type: string
+      description: "Correlation ID shown in TrustGuard Activity"
+    findings:
+      type: array
+      items:
+        type: object
+      description: "Raw findings returned by TrustGuard"
+extra:
+  python:
+    source: tools/evaluate_output.py

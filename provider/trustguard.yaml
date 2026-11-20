@@ -1,0 +1,45 @@
+identity:
+  author: neuraltrust
+  name: trustguard
+  label:
+    en_US: NeuralTrust TrustGuard
+    zh_Hans: NeuralTrust TrustGuard
+  description:
+    en_US: Evaluate prompts and model responses against your TrustGuard security policy.
+    zh_Hans: 按照 TrustGuard 安全策略评估提示词和模型回复。
+  icon: icon.png
+  tags:
+    - utilities
+credentials_for_provider:
+  api_key:
+    type: secret-input
+    required: true
+    label:
+      en_US: TrustGuard API Key
+      zh_Hans: TrustGuard API Key
+    placeholder:
+      en_US: tgk_...
+      zh_Hans: tgk_...
+    help:
+      en_US: Create an Application > REST API collector in the NeuralTrust console (Agent Security > Collectors), assign a policy, and create the key on its Auth tab. The key is shown once.
+      zh_Hans: 在 NeuralTrust 控制台（Agent Security > Collectors）创建 Application > REST API 收集器，分配策略，并在 Auth 标签页创建密钥（仅显示一次）。
+    url: https://docs.neuraltrust.ai/trustguard/concepts/collectors
+  base_url:
+    type: text-input
+    required: false
+    default: https://trustguard.neuraltrust.ai
+    label:
+      en_US: TrustGuard Base URL
+      zh_Hans: TrustGuard 基础地址
+    placeholder:
+      en_US: https://trustguard.neuraltrust.ai
+      zh_Hans: https://trustguard.neuraltrust.ai
+    help:
+      en_US: Public TrustGuard origin for your workspace, shown on the collector's Connection tab. Change it only for a regional, self-hosted or hybrid deployment.
+      zh_Hans: 工作区的 TrustGuard 公网地址，可在收集器的 Connection 标签页查看。仅在区域、自托管或混合部署时修改。
+tools:
+  - tools/evaluate_input.yaml
+  - tools/evaluate_output.yaml
+extra:
+  python:
+    source: provider/trustguard.py

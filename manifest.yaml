@@ -1,0 +1,48 @@
+version: 0.1.0
+type: plugin
+# Marketplace org: must match the directory in langgenius/dify-plugins (neuraltrust/trustguard/)
+# and must not contain "dify" or "langgenius".
+author: neuraltrust
+name: trustguard
+label:
+  en_US: NeuralTrust TrustGuard
+  zh_Hans: NeuralTrust TrustGuard
+description:
+  en_US: Runtime security for Dify apps. Evaluate prompts and model responses with NeuralTrust TrustGuard (jailbreak, toxicity, PII/secret masking, custom moderation, indirect prompt injection) and branch your workflow on the verdict, or plug TrustGuard into Dify's Content Moderation through the bundled endpoint.
+  zh_Hans: 使用 NeuralTrust TrustGuard 对提示词和模型回复进行运行时安全检测（越狱、毒性、PII/密钥脱敏、自定义审核、间接提示注入），并根据判定结果分支工作流；也可通过内置 endpoint 接入 Dify 的内容审核。
+icon: icon.png
+# NOTE: the repo curation policy lists `security` as an accepted tag, but dify-plugin-daemon
+# (v0.6.15 and main) rejects it at packaging time (plugin_tag validator). Switch to `security`
+# once the daemon supports it.
+tags:
+  - utilities
+created_at: "2026-11-10T00:00:00Z"
+resource:
+  memory: 268435456
+  permission:
+    endpoint:
+      enabled: true
+plugins:
+  tools:
+    - provider/trustguard.yaml
+  endpoints:
+    - endpoints/moderation_group.yaml
+meta:
+  version: 0.0.1
+  arch:
+    - amd64
+    - arm64
+  runner:
+    language: python
+    version: "3.12"
+    entrypoint: main
+  # Tested end to end on Dify Cloud (November 2026) via remote debugging.
+  minimum_dify_version: 1.10.0
+# In-package policy (required by the Marketplace checks); it links to the NeuralTrust privacy policy.
+privacy: ./PRIVACY.md
+repo: https://github.com/NeuralTrust/dify-plugin-trustguard
+contact: alessandro.pignati@neuraltrust.ai
+# Outbound domains (read by the Marketplace access-domain check). Self-hosted origins are user-configured.
+network:
+  domains:
+    - trustguard.neuraltrust.ai

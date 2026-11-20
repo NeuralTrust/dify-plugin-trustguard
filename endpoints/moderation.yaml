@@ -1,0 +1,5 @@
+path: "/moderation"
+method: "POST"
+extra:
+  python:
+    source: "endpoints/moderation.py"

@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-and-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pytest
+
+      - name: Unit tests
+        run: pytest -q tests
+
+      - name: Install Dify plugin CLI
+        run: |
+          curl -sSfL -o /usr/local/bin/dify \
+            https://github.com/langgenius/dify-plugin-daemon/releases/download/0.6.15/dify-plugin-linux-amd64
+          chmod +x /usr/local/bin/dify
+          dify version
+
+      - name: Package
+        run: |
+          VERSION=$(grep -E '^version:' manifest.yaml | awk '{print $2}')
+          mkdir -p dist
+          cd ..
+          dify plugin package "./${GITHUB_WORKSPACE##*/}" -o "${GITHUB_WORKSPACE}/dist/trustguard-${VERSION}.difypkg"
+
+      - name: Marketplace validator
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+          git clone --depth 1 https://github.com/langgenius/dify-marketplace-toolkit.git /tmp/toolkit
+          python3 /tmp/toolkit/validator/validate-difypkg.py dist/*.difypkg --output-dir /tmp/report
+          cat /tmp/report/summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: difypkg
+          path: dist/*.difypkg

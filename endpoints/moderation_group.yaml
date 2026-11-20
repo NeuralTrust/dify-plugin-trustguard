@@ -1,0 +1,54 @@
+settings:
+  - name: trustguard_api_key
+    type: secret-input
+    required: true
+    label:
+      en_US: TrustGuard API Key
+      zh_Hans: TrustGuard API Key
+    placeholder:
+      en_US: tgk_...
+      zh_Hans: tgk_...
+    help:
+      en_US: Collector API key (Application > REST API collector). Use a dedicated collector for Content Moderation so its traffic is distinguishable in Activity.
+      zh_Hans: 收集器 API 密钥（Application > REST API 收集器）。
+  - name: trustguard_base_url
+    type: text-input
+    required: false
+    default: https://trustguard.neuraltrust.ai
+    label:
+      en_US: TrustGuard Base URL
+      zh_Hans: TrustGuard 基础地址
+    placeholder:
+      en_US: https://trustguard.neuraltrust.ai
+      zh_Hans: https://trustguard.neuraltrust.ai
+  - name: extension_api_key
+    type: secret-input
+    required: true
+    label:
+      en_US: API Extension Key
+      zh_Hans: API 扩展密钥
+    placeholder:
+      en_US: A long random string you also paste into Dify's API Extension
+      zh_Hans: 一个较长的随机字符串，同时填入 Dify 的 API 扩展
+    help:
+      en_US: Dify sends this value as "Authorization Bearer" when it calls the endpoint. Use the same value in Settings > API Extension > API Key.
+      zh_Hans: Dify 调用该 endpoint 时会以 Bearer 形式发送此值。
+  - name: blocked_message
+    type: text-input
+    required: false
+    default: "This content was blocked by NeuralTrust TrustGuard."
+    label:
+      en_US: Blocked Response
+      zh_Hans: 拦截提示
+  - name: fail_open
+    type: boolean
+    required: false
+    default: false
+    label:
+      en_US: Fail Open on Unreachable
+      zh_Hans: 不可达时放行
+    help:
+      en_US: If enabled, content is allowed when TrustGuard is unreachable (timeouts, 429/502/503/504 after retries). Off by default (fail closed).
+      zh_Hans: 启用后，TrustGuard 不可达时放行内容。默认关闭。
+endpoints:
+  - endpoints/moderation.yaml
